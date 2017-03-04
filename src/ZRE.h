@@ -1,33 +1,49 @@
-#pragma once
+#ifndef __ZMTP_H_INCLUDED__
+#define __ZMTP_H_INCLUDED__
 
-/* zRE library by Michael Schoonmaker
- */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// This will load the definition for common Particle variable types
-#include "Particle.h"
+#include "ZMTP.h"
 
-// This is your main class that users will import into their application
-class ZRE
-{
-public:
-  /**
-   * Constructor
-   */
-  ZRE();
+#define ZRE_DISCOVERY_PORT 5670
+#define ZRE_SERVICE_PORT 5671
 
-  /**
-   * Example method
-   */
-  void begin();
+typedef struct _zre_node_t zre_node_t;
 
-  /**
-   * Example method
-   */
-  void process();
+// Constructor, creates a new ZRE node. Note that until you start the
+// node it is silent and invisible to other nodes on the network.
+// The node name is provided to other nodes during discovery. If you
+// specify NULL, Zyre generates a randomized node name from the UUID.
+zre_node_t * zre_node_new (const char *name);
 
-private:
-  /**
-   * Example private method
-   */
-  void doit();
-};
+// Destructor, destroys a Zyre node. When you destroy a node, any
+// messages it is sending or receiving will be discarded.
+void zre_node_destroy (zre_node_t **self_p);
+
+// Start node, after setting header values. When you start a node it
+// begins discovery and connection. Returns 0 if OK, -1 if it wasn't
+// possible to start the node.
+int zre_node_start (zre_node_t *self);
+
+// Stop node; this signals to other peers that this node will go away.
+// This is polite; however you can also just destroy the node without
+// stopping it.
+void zre_node_stop (zre_node_t *self);
+
+// Receive next message from network; the message may be a control
+// message (ENTER, EXIT, JOIN, LEAVE) or data (WHISPER, SHOUT).
+// Returns zmtp_msg_t object, or NULL if interrupted
+// Caller owns return value and must destroy it when done.
+zmtp_msg_t * zre_node_recv (zre_node_t *self);
+
+// Send message to single peer, specified as a UUID string
+// Destroys message after sending
+int zyre_whisper (zre_node_t *self, const char *peer, zmtp_msg_t **msg_p);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
