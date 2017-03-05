@@ -18,7 +18,7 @@
     abort ())
 
 #define debug_dump(e, len) \
-  ((void) __debug_dump ("#e", e, len))
+  ((void) __debug_dump (#e, e, len))
 void __debug_dump (const char *label, const uint8_t *buffer, uint8_t len);
 
 #endif
