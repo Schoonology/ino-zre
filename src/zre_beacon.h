@@ -23,6 +23,8 @@ uint8_t *zre_beacon_uuid (zre_beacon_t *self);
 
 uint16_t zre_beacon_port (zre_beacon_t *self);
 
+uint8_t *zre_beacon_addr (zre_beacon_t *self);
+
 void zre_beacon_send (zre_beacon_t *self, UDP *socket);
 
 void zre_beacon_recv (zre_beacon_t *self, UDP *socket);

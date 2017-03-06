@@ -13,6 +13,7 @@ struct _zre_beacon_t {
   uint8_t signature[4];
   uint8_t uuid[16];
   uint8_t port[2];
+  uint8_t addr[4];
 };
 
 zre_beacon_t *zre_beacon_new () {
@@ -71,8 +72,15 @@ uint16_t zre_beacon_port (zre_beacon_t *self) {
   return (self->port[0] << 8) | self->port[1];
 }
 
+uint8_t *zre_beacon_addr (zre_beacon_t *self) {
+  assert (self);
+
+  return self->addr;
+}
+
 void zre_beacon_send (zre_beacon_t *self, UDP *socket) {
   assert (self);
+  assert (socket);
 
   socket->beginPacket (BROADCAST_ADDRESS, ZRE_DISCOVERY_PORT);
   socket->write ((uint8_t *) self, sizeof (zre_beacon_t));
@@ -81,12 +89,21 @@ void zre_beacon_send (zre_beacon_t *self, UDP *socket) {
 
 void zre_beacon_recv (zre_beacon_t *self, UDP *socket) {
   assert (self);
+  assert (socket);
 
   socket->read ((uint8_t *) self, sizeof (zre_beacon_t));
+
+  IPAddress recvfrom = socket->remoteIP ();
+  for (uint8_t i = 0; i < 4; ++i) {
+    self->addr[i] = recvfrom[i];
+  }
 }
 
 void zre_beacon_dump (zre_beacon_t *self) {
   assert (self);
 
-  debug_dump ((uint8_t *) self, sizeof (zre_beacon_t));
+  debug_dump (self->signature, 4);
+  debug_dump (self->uuid, 16);
+  debug_dump ((uint8_t *) &self->addr, 4);
+  debug_dump (self->port, 2);
 }
