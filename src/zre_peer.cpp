@@ -6,7 +6,7 @@ struct _zre_peer_t {
   zmtp_socket_t *socket;
   uint8_t uuid[16];
   uint16_t port;
-  bool sent_hello;
+  uint8_t sequence;
 };
 
 zre_peer_t *zre_peer_new (zre_beacon_t *beacon) {
@@ -15,7 +15,7 @@ zre_peer_t *zre_peer_new (zre_beacon_t *beacon) {
 
   self->port = zre_beacon_port (beacon);
   memcpy (self->uuid, zre_beacon_uuid (beacon), 16);
-  self->sent_hello = false;
+  self->sequence = 1;
 
   self->socket = zmtp_socket_new (DEALER);
   // TODO(schoon) - Handle failed connections.
@@ -56,10 +56,10 @@ void zre_peer_update (zre_peer_t *self) {
 
   zmtp_socket_update (self->socket);
 
-  if (!self->sent_hello && zmtp_socket_ready (self->socket)) {
+  if (self->sequence == 1 && zmtp_socket_ready (self->socket)) {
     uint8_t hello[47] = {
       0xAA, 0xA1, // signature
-      1, 2, 0, 1, // id version sequence
+      1, 2, 0, self->sequence, // id version sequence
       // 0,          // endpoint
       25, 't', 'c', 'p', ':', '/', '/', '1', '9', '2', '.', '1', '6', '8', '.', '2', '9', '.', '1', '5', '5', ':', '5', '6', '7', '1',
       0, 0, 0, 0, // groups
@@ -73,7 +73,30 @@ void zre_peer_update (zre_peer_t *self) {
 
     zmtp_frame_dump (frame);
 
-    self->sent_hello = true;
+    zmtp_frame_destroy (&frame);
+
+    self->sequence++;
+  } else if (self->sequence < 10 && zmtp_socket_ready (self->socket)) {
+    uint8_t whisper[6] = {
+      0xAA, 0xA1,
+      2, 2, 0, self->sequence
+    };
+
+    uint8_t message[4] = { 'T', 'e', 's', 't' };
+
+    zmtp_frame_t *inner = zmtp_frame_new (message, 4);
+    zmtp_frame_t *frame = zmtp_frame_new (whisper, 6, MORE);
+
+    zmtp_socket_send (self->socket, frame);
+    zmtp_socket_send (self->socket, inner);
+
+    zmtp_frame_dump (inner);
+    zmtp_frame_dump (frame);
+
+    zmtp_frame_destroy (&inner);
+    zmtp_frame_destroy (&frame);
+
+    self->sequence++;
   }
 }
 
