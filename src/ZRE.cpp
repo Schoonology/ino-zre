@@ -50,6 +50,7 @@ void zre_node_destroy (zre_node_t **self_p) {
     zre_node_t *self = *self_p;
 
     free (self->uuid);
+    zre_beacon_destroy (&self->beacon);
     free (self->name);
 
     delete self->socket;
@@ -72,6 +73,7 @@ void zre_node_stop (zre_node_t *self) {
 
 zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
   assert (self);
+  assert (beacon);
 
   for (uint8_t i = 0; i < self->peer_count; ++i) {
     zre_peer_t *peer = self->peer_list[i];
