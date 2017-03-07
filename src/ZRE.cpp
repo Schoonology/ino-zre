@@ -97,6 +97,8 @@ zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
   zre_peer_t **peer_p = self->peer_list + (self->peer_count - 1);
   *peer_p = zre_peer_new (beacon);
 
+  zre_peer_socket_uuid (*peer_p, self->uuid);
+
   Serial.println ("New peer:");
   Serial.println ("---");
   zre_peer_dump (*peer_p);

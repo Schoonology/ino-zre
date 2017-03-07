@@ -11,6 +11,8 @@ void zre_peer_destroy (zre_peer_t **self_p);
 
 uint8_t *zre_peer_uuid (zre_peer_t *self);
 
+void zre_peer_socket_uuid (zre_peer_t *self, uint8_t *uuid);
+
 void zre_peer_update (zre_peer_t *self);
 
 void zre_peer_dump (zre_peer_t *self);

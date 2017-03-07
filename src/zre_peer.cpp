@@ -44,6 +44,13 @@ uint8_t *zre_peer_uuid (zre_peer_t *self) {
   return self->uuid;
 }
 
+void zre_peer_socket_uuid (zre_peer_t *self, uint8_t *uuid) {
+  assert (self);
+  assert (uuid);
+
+  return zmtp_socket_uuid (self->socket, uuid);
+}
+
 void zre_peer_update (zre_peer_t *self) {
   assert (self);
 
