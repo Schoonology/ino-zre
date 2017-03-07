@@ -31,6 +31,9 @@ zre_node_t *zre_node_new (const char *name) {
   self->socket = new UDP();
   self->peer_count = 0;
 
+  Serial.println("Beacon:");
+  zre_beacon_dump (self->beacon);
+
   if (name == NULL) {
     self->name = (char *) malloc (7);
     memcpy (self->name, self->uuid, 6);
@@ -110,9 +113,6 @@ void zre_node_update (zre_node_t *self) {
   if (self->socket->parsePacket () > 0) {
     zre_beacon_t *beacon = zre_beacon_new ();
     zre_beacon_recv (beacon, self->socket);
-
-    // Serial.println ("Beacon:");
-    // zre_beacon_dump (beacon);
 
     if (zre_beacon_valid (beacon)) {
       zre_node_require_peer (self, beacon);
