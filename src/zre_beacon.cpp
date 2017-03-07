@@ -1,14 +1,6 @@
 #include "zre_beacon.h"
 #include "util.h"
 
-#ifndef BROADCAST_ADDRESS
-static IPAddress BROADCAST_ADDRESS (255, 255, 255, 255);
-#endif
-
-#ifndef ZRE_DISCOVERY_PORT
-#define ZRE_DISCOVERY_PORT 5670
-#endif
-
 #define ZRE_BEACON_SIZE 22
 
 struct _zre_beacon_t {
@@ -86,9 +78,7 @@ void zre_beacon_send (zre_beacon_t *self, UDP *socket) {
   assert (self);
   assert (socket);
 
-  socket->beginPacket (BROADCAST_ADDRESS, ZRE_DISCOVERY_PORT);
   socket->write ((uint8_t *) self, ZRE_BEACON_SIZE);
-  socket->endPacket ();
 }
 
 void zre_beacon_recv (zre_beacon_t *self, UDP *socket) {
