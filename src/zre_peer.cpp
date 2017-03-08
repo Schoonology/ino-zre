@@ -51,6 +51,41 @@ void zre_peer_socket_uuid (zre_peer_t *self, uint8_t *uuid) {
   return zmtp_socket_uuid (self->socket, uuid);
 }
 
+void zre_peer_send (zre_peer_t *self, zmtp_frame_t *frame) {
+  assert (self);
+  assert (frame);
+
+  zmtp_socket_send (self->socket, frame);
+  zmtp_frame_dump (frame);
+}
+
+void zre_peer_whisper (zre_peer_t *self, zmtp_frame_t **frame_list, uint8_t frame_count) {
+  assert (self);
+  assert (frame_list);
+
+  // TODO(schoon) - Queue.
+  if (!zmtp_socket_ready (self->socket)) {
+    return;
+  }
+
+  uint8_t whisper[6] = {
+    0xAA, 0xA1,
+    2, 2, 0, self->sequence
+  };
+
+  zmtp_frame_t *wrapper = zmtp_frame_new (whisper, 6, ZMTP_FRAME_MORE);
+
+  zre_peer_send (self, wrapper);
+
+  for (uint8_t i = 0; i < frame_count; ++i) {
+    zre_peer_send (self, frame_list[i]);
+  }
+
+  zmtp_frame_destroy (&wrapper);
+
+  ++self->sequence;
+}
+
 void zre_peer_update (zre_peer_t *self) {
   assert (self);
 
@@ -69,34 +104,12 @@ void zre_peer_update (zre_peer_t *self) {
     };
 
     zmtp_frame_t *frame = zmtp_frame_new (hello, 47);
-    zmtp_socket_send (self->socket, frame);
 
-    zmtp_frame_dump (frame);
+    zre_peer_send (self, frame);
 
     zmtp_frame_destroy (&frame);
 
-    self->sequence++;
-  } else if (self->sequence < 10 && zmtp_socket_ready (self->socket)) {
-    uint8_t whisper[6] = {
-      0xAA, 0xA1,
-      2, 2, 0, self->sequence
-    };
-
-    uint8_t message[4] = { 'T', 'e', 's', 't' };
-
-    zmtp_frame_t *inner = zmtp_frame_new (message, 4);
-    zmtp_frame_t *frame = zmtp_frame_new (whisper, 6, MORE);
-
-    zmtp_socket_send (self->socket, frame);
-    zmtp_socket_send (self->socket, inner);
-
-    zmtp_frame_dump (inner);
-    zmtp_frame_dump (frame);
-
-    zmtp_frame_destroy (&inner);
-    zmtp_frame_destroy (&frame);
-
-    self->sequence++;
+    ++self->sequence;
   }
 }
 

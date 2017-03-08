@@ -136,3 +136,13 @@ void zre_node_update (zre_node_t *self) {
     zre_peer_update (peer);
   }
 }
+
+void zre_node_broadcast (zre_node_t *self, zmtp_frame_t **frame_list, uint8_t frame_count) {
+  assert (self);
+  assert (frame_list);
+
+  for (uint8_t i = 0; i < self->peer_count; ++i) {
+    zre_peer_t *peer = self->peer_list[i];
+    zre_peer_whisper (peer, frame_list, frame_count);
+  }
+}
