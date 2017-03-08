@@ -1,11 +1,4 @@
-#if defined(ARDUINO) && ARDUINO >= 100
-  #include "Arduino.h"
-#elif defined(SPARK)
-  #include "application.h"
-#else
-  #error Only ARDUINO or SPARK supported.
-#endif
-
+#include "arch.h"
 #include "zre_node.h"
 #include "zre_beacon.h"
 #include "zre_peer.h"
