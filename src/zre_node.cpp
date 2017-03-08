@@ -50,9 +50,18 @@ void zre_node_destroy (zre_node_t **self_p) {
     free (self->uuid);
     zre_beacon_destroy (&self->beacon);
     free (self->name);
-
     delete self->socket;
 
+    if (self->peer_list) {
+      for (uint8_t i = 0; i < self->peer_count; ++i) {
+        zre_peer_t *peer = self->peer_list[i];
+        zre_peer_destroy (&peer);
+      }
+
+      free (self->peer_list);
+    }
+
+    free (self);
     *self_p = NULL;
   }
 }
@@ -85,7 +94,9 @@ zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
   uint8_t peer_count = self->peer_count + 1;
   zre_peer_t **peer_list = (zre_peer_t **) malloc (sizeof (zre_peer_t *) * peer_count);
   memcpy (peer_list, self->peer_list, self->peer_count);
-  free (self->peer_list);
+  if (self->peer_list) {
+    free (self->peer_list);
+  }
   self->peer_list = peer_list;
   self->peer_count = peer_count;
 
@@ -122,7 +133,6 @@ void zre_node_update (zre_node_t *self) {
 
   for (uint8_t i = 0; i < self->peer_count; ++i) {
     zre_peer_t *peer = self->peer_list[i];
-
     zre_peer_update (peer);
   }
 }

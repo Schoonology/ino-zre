@@ -14,6 +14,8 @@ zre_beacon_t *zre_beacon_new () {
   zre_beacon_t *self = (zre_beacon_t *) malloc (sizeof (zre_beacon_t));
   assert (self);
 
+  zero_bytes ((uint8_t *) self, 0, sizeof (zre_beacon_t));
+
   return self;
 }
 
@@ -42,7 +44,6 @@ void zre_beacon_destroy (zre_beacon_t **self_p) {
     zre_beacon_t *self = *self_p;
 
     free (self);
-
     *self_p = NULL;
   }
 }
