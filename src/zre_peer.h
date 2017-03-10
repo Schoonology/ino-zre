@@ -28,6 +28,8 @@ uint8_t *zre_peer_uuid (zre_peer_t *self);
 // See `zmtp_socket_uuid` for more information.
 void zre_peer_socket_uuid (zre_peer_t *self, uint8_t *uuid);
 
+bool zre_peer_ready (zre_peer_t *self);
+
 // Send a set of ZMTP frames to a connected peer. If the underlying
 // DEALER socket is not ready, these frames will be dropped.
 void zre_peer_whisper (zre_peer_t *self, zmtp_frame_t **frame_list, uint8_t frame_count);

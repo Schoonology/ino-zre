@@ -85,6 +85,19 @@ void zre_node_stop (zre_node_t *self) {
   self->socket->stop ();
 }
 
+bool zre_node_ready (zre_node_t *self) {
+  assert (self);
+
+  bool ready = false;
+
+  for (uint8_t i = 0; i < self->peer_count; ++i) {
+    zre_peer_t *peer = self->peer_list[i];
+    ready = ready || zre_peer_ready (peer);
+  }
+
+  return ready;
+}
+
 zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
   assert (self);
   assert (beacon);

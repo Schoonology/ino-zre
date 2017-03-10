@@ -24,6 +24,8 @@ void zre_node_start (zre_node_t *self);
 // Stop a ZRE node.
 void zre_node_stop (zre_node_t *self);
 
+bool zre_node_ready (zre_node_t *self);
+
 // Update the internal state. This should be called periodically
 // to read received data and send beacons. If _update is not called
 // often enough (usually more frequently that every 5 seconds),

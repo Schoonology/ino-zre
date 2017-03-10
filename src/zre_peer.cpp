@@ -59,6 +59,12 @@ void zre_peer_send (zre_peer_t *self, zmtp_frame_t *frame) {
   zmtp_frame_dump (frame);
 }
 
+bool zre_peer_ready (zre_peer_t *self) {
+  assert (self);
+
+  return zmtp_socket_ready (self->socket);
+}
+
 void zre_peer_whisper (zre_peer_t *self, zmtp_frame_t **frame_list, uint8_t frame_count) {
   assert (self);
   assert (frame_list);
