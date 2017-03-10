@@ -75,6 +75,13 @@ void zre_node_start (zre_node_t *self) {
 void zre_node_stop (zre_node_t *self) {
   assert (self);
 
+  zre_beacon_destroy (&self->beacon);
+  self->beacon = zre_beacon_new (self->uuid, 0);
+
+  self->socket->beginPacket (IPAddress (255, 255, 255, 255), ZRE_DISCOVERY_PORT);
+  zre_beacon_send (self->beacon, self->socket);
+  self->socket->endPacket ();
+
   self->socket->stop ();
 }
 
