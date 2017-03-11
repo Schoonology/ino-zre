@@ -6,6 +6,7 @@
 #define __ZRE_BEACON_H_INCLUDED__
 
 #include "arch.h"
+#include "zmtp_uuid.h"
 
 // Opaque type.
 typedef struct _zre_beacon_t zre_beacon_t;
@@ -16,7 +17,7 @@ zre_beacon_t *zre_beacon_new ();
 // Create a new, valid ZRE beacon with the specified UUID and port. The
 // UUID should be 16 bytes, which will be copied into the beacon's
 // internal state.
-zre_beacon_t *zre_beacon_new (const uint8_t *uuid, uint16_t port);
+zre_beacon_t *zre_beacon_new (zmtp_uuid_t *uuid, uint16_t port);
 
 // Destroy a ZRE beacon.
 void zre_beacon_destroy (zre_beacon_t **self_p);

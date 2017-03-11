@@ -19,7 +19,7 @@ zre_beacon_t *zre_beacon_new () {
   return self;
 }
 
-zre_beacon_t *zre_beacon_new (const uint8_t *uuid, uint16_t port) {
+zre_beacon_t *zre_beacon_new (zmtp_uuid_t *uuid, uint16_t port) {
   zre_beacon_t *self = zre_beacon_new ();
 
   self->signature[0] = 'Z';
@@ -27,7 +27,7 @@ zre_beacon_t *zre_beacon_new (const uint8_t *uuid, uint16_t port) {
   self->signature[2] = 'E';
   self->signature[3] = 0x01;
 
-  memcpy (self->uuid, uuid, 16);
+  memcpy (self->uuid, zmtp_uuid_bytes (uuid), 16);
 
   self->port[0] = port >> 8 & 0xFF;
   self->port[1] = port & 0xFF;

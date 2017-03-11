@@ -30,7 +30,6 @@ void zre_peer_destroy (zre_peer_t **self_p) {
   if (*self_p) {
     zre_peer_t *self = *self_p;
 
-    free (self->uuid);
     zmtp_socket_destroy (&self->socket);
 
     free (self);
@@ -44,7 +43,7 @@ uint8_t *zre_peer_uuid (zre_peer_t *self) {
   return self->uuid;
 }
 
-void zre_peer_socket_uuid (zre_peer_t *self, uint8_t *uuid) {
+void zre_peer_socket_uuid (zre_peer_t *self, zmtp_uuid_t *uuid) {
   assert (self);
   assert (uuid);
 

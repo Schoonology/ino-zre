@@ -26,7 +26,7 @@ uint8_t *zre_peer_uuid (zre_peer_t *self);
 // Set the UUID sent as the Identity from the local DEALER socket.
 //
 // See `zmtp_socket_uuid` for more information.
-void zre_peer_socket_uuid (zre_peer_t *self, uint8_t *uuid);
+void zre_peer_socket_uuid (zre_peer_t *self, zmtp_uuid_t *uuid);
 
 bool zre_peer_ready (zre_peer_t *self);
 

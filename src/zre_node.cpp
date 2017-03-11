@@ -1,4 +1,5 @@
 #include "arch.h"
+#include "zmtp_uuid.h"
 #include "zre_node.h"
 #include "zre_beacon.h"
 #include "zre_peer.h"
@@ -8,7 +9,7 @@
 #define ZRE_SERVICE_PORT 5671
 
 struct _zre_node_t {
-  uint8_t *uuid;
+  zmtp_uuid_t *uuid;
   zre_beacon_t *beacon;
   zre_peer_t **peer_list;
   uint8_t peer_count;
@@ -21,7 +22,7 @@ zre_node_t *zre_node_new (const char *name) {
   zre_node_t *self = (zre_node_t *) malloc (sizeof (zre_node_t));
   assert (self);
 
-  self->uuid = uuid_new ();
+  self->uuid = zmtp_uuid_new ();
   self->beacon = zre_beacon_new (self->uuid, ZRE_SERVICE_PORT);
   self->socket = new UDP();
   self->peer_count = 0;
@@ -31,7 +32,7 @@ zre_node_t *zre_node_new (const char *name) {
 
   if (name == NULL) {
     self->name = (char *) malloc (7);
-    memcpy (self->name, self->uuid, 6);
+    memcpy (self->name, zmtp_uuid_bytes (self->uuid), 6);
   } else {
     size_t name_len = strlen (name);
     self->name = (char *) malloc (name_len);
@@ -47,7 +48,7 @@ void zre_node_destroy (zre_node_t **self_p) {
   if (*self_p) {
     zre_node_t *self = *self_p;
 
-    free (self->uuid);
+    zmtp_uuid_destroy (&self->uuid);
     zre_beacon_destroy (&self->beacon);
     free (self->name);
     delete self->socket;
@@ -105,7 +106,7 @@ zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
   for (uint8_t i = 0; i < self->peer_count; ++i) {
     zre_peer_t *peer = self->peer_list[i];
 
-    if (uuid_equal (zre_peer_uuid (peer), zre_beacon_uuid (beacon))) {
+    if (!memcmp (zre_peer_uuid (peer), zre_beacon_uuid (beacon), 16)) {
       // TODO(schoon) - Handle port going to zero (disconnects).
       return peer;
     }
