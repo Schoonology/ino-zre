@@ -115,7 +115,7 @@ zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
   uint8_t peer_count = self->peer_count + 1;
   zre_peer_t **peer_list = (zre_peer_t **) malloc (sizeof (zre_peer_t *) * peer_count);
   if (self->peer_list) {
-    memcpy (peer_list, self->peer_list, self->peer_count);
+    memcpy (peer_list, self->peer_list, sizeof (zre_peer_t *) * self->peer_count);
     free (self->peer_list);
   }
   self->peer_list = peer_list;
