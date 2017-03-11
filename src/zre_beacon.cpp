@@ -14,7 +14,7 @@ zre_beacon_t *zre_beacon_new () {
   zre_beacon_t *self = (zre_beacon_t *) malloc (sizeof (zre_beacon_t));
   assert (self);
 
-  zero_bytes ((uint8_t *) self, 0, sizeof (zre_beacon_t));
+  memset ((uint8_t *) self, 0, sizeof (zre_beacon_t));
 
   return self;
 }
@@ -97,8 +97,8 @@ void zre_beacon_recv (zre_beacon_t *self, UDP *socket) {
 void zre_beacon_dump (zre_beacon_t *self) {
   assert (self);
 
-  debug_dump (self->signature, 4);
-  debug_dump (self->uuid, 16);
-  debug_dump (self->port, 2);
-  debug_dump (self->addr, 4);
+  zre_debug_dump (self->signature, 4);
+  zre_debug_dump (self->uuid, 16);
+  zre_debug_dump (self->port, 2);
+  zre_debug_dump (self->addr, 4);
 }

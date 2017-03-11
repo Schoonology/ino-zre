@@ -145,7 +145,7 @@ void zre_peer_update (zre_peer_t *self) {
 void zre_peer_dump (zre_peer_t *self) {
   assert (self);
 
-  debug_dump (self->uuid, 16);
+  zre_debug_dump (self->uuid, 16);
   Serial.println (self->port);
   zmtp_socket_dump (self->socket);
 }
