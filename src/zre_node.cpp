@@ -113,8 +113,8 @@ zre_peer_t *zre_node_require_peer (zre_node_t *self, zre_beacon_t *beacon) {
 
   uint8_t peer_count = self->peer_count + 1;
   zre_peer_t **peer_list = (zre_peer_t **) malloc (sizeof (zre_peer_t *) * peer_count);
-  memcpy (peer_list, self->peer_list, self->peer_count);
   if (self->peer_list) {
+    memcpy (peer_list, self->peer_list, self->peer_count);
     free (self->peer_list);
   }
   self->peer_list = peer_list;
@@ -154,6 +154,16 @@ void zre_node_update (zre_node_t *self) {
   for (uint8_t i = 0; i < self->peer_count; ++i) {
     zre_peer_t *peer = self->peer_list[i];
     zre_peer_update (peer);
+  }
+}
+
+void zre_node_broadcast (zre_node_t *self, zmtp_msg_t **message_p) {
+  assert (self);
+  assert (message_p);
+
+  for (uint8_t i = 0; i < self->peer_count; ++i) {
+    zre_peer_t *peer = self->peer_list[i];
+    zre_peer_whisper (peer, message_p);
   }
 }
 

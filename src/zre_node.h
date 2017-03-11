@@ -32,6 +32,12 @@ bool zre_node_ready (zre_node_t *self);
 // connected nodes will consider the node slow or evasive.
 void zre_node_update (zre_node_t *self);
 
+// Send a ZMTP message to all connected peers, consuming the message.
+// (This is NOT a normal operation for ZRE).
+//
+// See `zre_peer_whisper` for more information.
+void zre_node_broadcast (zre_node_t *self, zmtp_msg_t **message_p);
+
 // Send a set of frames to all connected peers (NOT a normal operation
 // for ZRE).
 //

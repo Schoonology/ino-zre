@@ -65,6 +65,29 @@ bool zre_peer_ready (zre_peer_t *self) {
   return zmtp_socket_ready (self->socket);
 }
 
+void zre_peer_whisper (zre_peer_t *self, zmtp_msg_t **message_p) {
+  assert (self);
+  assert (message_p);
+
+  // TODO(schoon) - Queue.
+  if (!zmtp_socket_ready (self->socket)) {
+    return;
+  }
+
+  uint8_t whisper[6] = {
+    0xAA, 0xA1,
+    2, 2, 0, self->sequence
+  };
+
+  zmtp_frame_t *wrapper = zmtp_frame_new (whisper, 6, ZMTP_FRAME_MORE);
+  zre_peer_send (self, wrapper);
+  zmtp_frame_destroy (&wrapper);
+
+  zmtp_msg_send (message_p, self->socket);
+
+  ++self->sequence;
+}
+
 void zre_peer_whisper (zre_peer_t *self, zmtp_frame_t **frame_list, uint8_t frame_count) {
   assert (self);
   assert (frame_list);
